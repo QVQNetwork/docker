@@ -2,6 +2,8 @@ FROM debian:sid
 
 MAINTAINER lrinQVQ <lrin@qvqnetwork.net>
 
+ENV USERNAME
+
 ENV PASSWORD
 
 RUN apt update && apt install wget gnupg2 libreadline-dev -y && apt upgrade -y
@@ -16,9 +18,11 @@ RUN apt install nginx openssh-server -y
 
 RUN mkdir /var/run/sshd
 
-RUN echo "root:$PASSWORD" | chpasswd
+RUN if [ "$USERNAME" != "root" ]; then useradd -b /home/$USERNAME -d /home/$USERNAME -m $USERNAME ; fi
 
-RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+RUN echo "$USERNAME:$PASSWORD" | chpasswd
+
+RUN if [ "USERNAME" = "root" ]; then echo "PermitRootLogin yes" >> /etc/ssh/sshd_config ; fi
 
 RUN sed -i 's|session.*required.*pam_loginuid.so|session optional pam_loginuid.so|' /etc/pam.d/sshd
 
