@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "Start SSH Server"
+sshd -D
+echo "Start Nginx Server"
+nginx
